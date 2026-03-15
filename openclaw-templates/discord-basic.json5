@@ -1,0 +1,27 @@
+// OpenClaw instance template — Discord channel
+{
+  identity: {
+    name: "{{INSTANCE_NAME}}",
+    theme: "helpful assistant",
+    emoji: "🤖",
+  },
+  agent: {
+    workspace: "/root/.openclaw/workspace",
+    model: {
+      primary: "{{MODEL}}",
+    },
+  },
+  channels: {
+    discord: {
+      token: "{{DISCORD_BOT_TOKEN}}",
+      guildId: "{{DISCORD_GUILD_ID}}",
+      allowChannels: {{DISCORD_ALLOW_CHANNELS}},  // array of channel IDs
+    },
+  },
+  gateway: {
+    port: 18789,
+    auth: {
+      tokens: ["{{API_BEARER_TOKEN}}"],
+    },
+  },
+}

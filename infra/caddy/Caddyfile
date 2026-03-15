@@ -1,0 +1,31 @@
+# AmtocBots Caddy reverse proxy configuration
+# Caddy automatically provisions TLS certificates via Let's Encrypt
+
+# ── Manager PWA ──────────────────────────────────────────────────────────────
+manager.amtocbot.com {
+    # Angular PWA — static files
+    reverse_proxy /api/* manager-api:8080
+    reverse_proxy /hubs/* manager-api:8080 {
+        # WebSocket support for SignalR
+        header_up Connection {>Connection}
+        header_up Upgrade {>Upgrade}
+    }
+    reverse_proxy manager-web:80
+}
+
+# ── Keycloak (auth) ───────────────────────────────────────────────────────────
+auth.amtocbot.com {
+    reverse_proxy keycloak:8080 {
+        header_up X-Forwarded-Proto {scheme}
+        header_up X-Forwarded-Host {host}
+        header_up X-Real-IP {remote_host}
+    }
+}
+
+# ── Development: plain HTTP on localhost ──────────────────────────────────────
+# Uncomment when running locally without a real domain:
+# :80 {
+#     reverse_proxy /api/* manager-api:8080
+#     reverse_proxy /hubs/* manager-api:8080
+#     reverse_proxy manager-web:80
+# }

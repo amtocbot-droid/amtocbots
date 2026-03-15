@@ -1,0 +1,32 @@
+# Local development overrides — not committed with secrets
+# Copy .env.example → .env and fill in values before running
+
+services:
+
+  manager-api:
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      Keycloak__Authority: "http://keycloak:8080/realms/amtocbots"
+    ports:
+      - "8080:8080"   # direct API access during dev
+
+  manager-web:
+    ports:
+      - "4200:80"     # Angular app
+
+  manager-db:
+    ports:
+      - "5432:5432"   # direct DB access during dev
+
+  keycloak:
+    command: start-dev --import-realm
+    environment:
+      KC_HOSTNAME: localhost
+      KC_HOSTNAME_STRICT: "false"
+      KC_HTTP_ENABLED: "true"
+    ports:
+      - "8180:8080"   # Keycloak admin console
+
+  redis:
+    ports:
+      - "6379:6379"

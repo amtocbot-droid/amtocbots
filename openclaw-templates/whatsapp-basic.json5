@@ -1,0 +1,25 @@
+// OpenClaw instance template — WhatsApp channel
+{
+  identity: {
+    name: "{{INSTANCE_NAME}}",
+    theme: "helpful assistant",
+    emoji: "🤖",
+  },
+  agent: {
+    workspace: "/root/.openclaw/workspace",
+    model: {
+      primary: "{{MODEL}}",
+    },
+  },
+  channels: {
+    whatsapp: {
+      allowFrom: {{WHATSAPP_ALLOW_FROM}},  // array of phone numbers e.g. ["+15551234567"]
+    },
+  },
+  gateway: {
+    port: 18789,
+    auth: {
+      tokens: ["{{API_BEARER_TOKEN}}"],
+    },
+  },
+}

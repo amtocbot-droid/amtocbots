@@ -1,0 +1,30 @@
+# Cloudflare Tunnel configuration
+#
+# Setup steps:
+#   1. Install cloudflared locally: brew install cloudflared
+#   2. Authenticate: cloudflared tunnel login
+#   3. Create tunnel: cloudflared tunnel create amtocbots-manager
+#   4. Copy the generated credentials JSON to infra/cloudflare/credentials.json
+#   5. Set tunnel-id below to the UUID from step 3
+#   6. In Cloudflare DNS, add CNAME records:
+#        manager.amtocbot.com → <tunnel-id>.cfargotunnel.com
+#        auth.amtocbot.com    → <tunnel-id>.cfargotunnel.com
+
+tunnel: <your-tunnel-id-here>
+credentials-file: /etc/cloudflared/credentials.json
+
+ingress:
+  # Manager PWA + API
+  - hostname: manager.amtocbot.com
+    service: http://caddy:80
+    originRequest:
+      noTLSVerify: false
+
+  # Keycloak (auth)
+  - hostname: auth.amtocbot.com
+    service: http://caddy:80
+    originRequest:
+      noTLSVerify: false
+
+  # Catch-all: return 404 for any unmatched hostnames
+  - service: http_status:404

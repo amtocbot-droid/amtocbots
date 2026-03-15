@@ -1,0 +1,29 @@
+# Environment secrets
+.env
+
+# Cloudflare tunnel credentials
+infra/cloudflare/credentials.json
+
+# .NET
+**/bin/
+**/obj/
+*.user
+.vs/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln.docstates
+
+# Angular / Node
+**/node_modules/
+**/dist/
+**/.angular/
+*.js.map
+
+# Docker volumes (local mounts)
+**/data/
+
+# OS
+.DS_Store
+Thumbs.db

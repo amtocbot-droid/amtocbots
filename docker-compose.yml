@@ -1,0 +1,164 @@
+networks:
+  internal:
+    driver: bridge
+  openclaw:
+    driver: bridge
+    name: amtocbots_openclaw
+
+volumes:
+  keycloak-db-data:
+  manager-db-data:
+  redis-data:
+  caddy-data:
+  caddy-config:
+
+services:
+
+  # ── Reverse Proxy ──────────────────────────────────────────────────────────
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    networks: [internal]
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./infra/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      - manager-api
+      - manager-web
+      - keycloak
+
+  # ── Cloudflare Tunnel ──────────────────────────────────────────────────────
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    restart: unless-stopped
+    command: tunnel --config /etc/cloudflared/config.yml run
+    networks: [internal]
+    volumes:
+      - ./infra/cloudflare/config.yml:/etc/cloudflared/config.yml:ro
+      - ./infra/cloudflare/credentials.json:/etc/cloudflared/credentials.json:ro
+    depends_on:
+      - caddy
+
+  # ── Angular PWA ────────────────────────────────────────────────────────────
+  manager-web:
+    build:
+      context: ./src/AmtocBots.Web
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    networks: [internal]
+    depends_on:
+      - manager-api
+
+  # ── .NET 10 API ────────────────────────────────────────────────────────────
+  manager-api:
+    build:
+      context: ./src/AmtocBots.Api
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    networks:
+      - internal
+      - openclaw
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__Default: "Host=manager-db;Port=5432;Database=amtocbots;Username=amtocbots;Password=${MANAGER_DB_PASSWORD}"
+      Redis__ConnectionString: "redis:6379"
+      Keycloak__Authority: "https://auth.amtocbot.com/realms/amtocbots"
+      Keycloak__Audience: "amtocbots-api"
+      Docker__SocketPath: "/var/run/docker.sock"
+      Docker__OpenClawNetwork: "amtocbots_openclaw"
+      Docker__OpenClawImage: "ghcr.io/openclaw/openclaw:latest"
+      Docker__PortRangeStart: "18789"
+      Ollama__BaseUrl: "http://host-gateway:11434"
+      Encryption__Key: "${ENCRYPTION_KEY}"
+      Cors__Origins: "https://manager.amtocbot.com"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    extra_hosts:
+      - "host-gateway:host-gateway"
+    depends_on:
+      manager-db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      keycloak:
+        condition: service_started
+
+  # ── App PostgreSQL (pgvector) ──────────────────────────────────────────────
+  manager-db:
+    image: pgvector/pgvector:pg16
+    restart: unless-stopped
+    networks: [internal]
+    volumes:
+      - manager-db-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: amtocbots
+      POSTGRES_USER: amtocbots
+      POSTGRES_PASSWORD: ${MANAGER_DB_PASSWORD}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U amtocbots -d amtocbots"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Keycloak ───────────────────────────────────────────────────────────────
+  keycloak:
+    build:
+      context: ./infra/keycloak
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    command: start --import-realm --optimized
+    networks: [internal]
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: "jdbc:postgresql://keycloak-db/keycloak"
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: ${KEYCLOAK_DB_PASSWORD}
+      KC_HOSTNAME: auth.amtocbot.com
+      KC_HOSTNAME_STRICT: "true"
+      KC_PROXY_HEADERS: xforwarded
+      KC_HTTP_ENABLED: "true"
+      KC_HTTPS_ENABLED: "false"
+      KC_HEALTH_ENABLED: "true"
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+    volumes:
+      - ./infra/keycloak/realm-export.json:/opt/keycloak/data/import/realm.json:ro
+    depends_on:
+      keycloak-db:
+        condition: service_healthy
+
+  # ── Keycloak PostgreSQL ────────────────────────────────────────────────────
+  keycloak-db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    networks: [internal]
+    volumes:
+      - keycloak-db-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: ${KEYCLOAK_DB_PASSWORD}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U keycloak -d keycloak"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Redis ──────────────────────────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
+    networks: [internal]
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
