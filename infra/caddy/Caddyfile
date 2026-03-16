@@ -1,8 +1,8 @@
 # AmtocBots Caddy reverse proxy configuration
-# Caddy automatically provisions TLS certificates via Let's Encrypt
+# TLS is terminated by Cloudflare tunnel — Caddy serves plain HTTP internally
 
 # ── Manager PWA ──────────────────────────────────────────────────────────────
-manager.amtocbot.com {
+http://manager.amtocbot.com {
     # Angular PWA — static files
     reverse_proxy /api/* manager-api:8080
     reverse_proxy /hubs/* manager-api:8080 {
@@ -14,7 +14,7 @@ manager.amtocbot.com {
 }
 
 # ── Keycloak (auth) ───────────────────────────────────────────────────────────
-auth.amtocbot.com {
+http://auth.amtocbot.com {
     reverse_proxy keycloak:8080 {
         header_up X-Forwarded-Proto {scheme}
         header_up X-Forwarded-Host {host}
