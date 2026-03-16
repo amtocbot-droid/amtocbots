@@ -62,10 +62,10 @@ dotnet ef database update          # apply migrations
 ### Frontend (Angular 21)
 ```bash
 cd src/AmtocBots.Web
-npm install
-ng serve                           # dev server on :4200 (proxies /api to :8080)
+npm install --legacy-peer-deps     # required due to peer dep conflicts
+ng serve                           # dev server on :4200 (proxies /api and /hubs to :8080)
 ng build                           # production build
-ng test                            # unit tests
+ng test                            # unit tests (Karma/Jasmine)
 ng generate component features/X/components/Y --standalone
 ```
 
@@ -102,7 +102,8 @@ OpenClaw containers are **not** in `docker-compose.yml` — they are spawned dyn
 - **Control flow** — `@if`, `@for`, `@switch` (not `*ngIf`/`*ngFor`)
 - **`inject()`** — use in constructors and `computed`/`effect` bodies, not constructor params
 - **Lazy routes** — all features loaded via `loadChildren` with `loadComponent` for leaf routes
-- **Feature stores** — one `@Injectable({ providedIn: 'root' })` signal store per feature
+- **Feature stores** — one `@Injectable({ providedIn: 'root' })` signal store per feature; use `takeUntilDestroyed()` for cleanup and `firstValueFrom()` to bridge observables to promises; apply optimistic updates before API calls
+- **Path aliases** — `@core/*`, `@shared/*`, `@features/*`, `@env/*` (configured in `tsconfig.json`)
 
 ## Auth Flow
 
@@ -131,12 +132,24 @@ Channel tokens in `channel_configs.config_json` are **AES-256 encrypted at rest*
 
 ## Cloudflare Tunnel Setup
 
+Caddy does **not** handle TLS — Cloudflare Tunnel terminates HTTPS externally.
+
 1. `cloudflared tunnel login`
 2. `cloudflared tunnel create amtocbots-manager`
-3. Copy credentials JSON → `infra/cloudflare/credentials.json` (gitignored)
+3. Set `TUNNEL_TOKEN` in `.env` (token-based auth; credentials JSON not used)
 4. Set tunnel ID in `infra/cloudflare/config.yml`
 5. Add CNAME DNS records in Cloudflare dashboard
 
 ## Environment
 
 Copy `.env.example` → `.env` and fill in all values. The override file `docker-compose.override.yml` is auto-included by `docker compose` for dev (exposes ports, uses `start-dev` for Keycloak).
+
+Dev port exposure via `docker-compose.override.yml`: API `:8080`, Angular `:4200`, PostgreSQL `:5432`, Keycloak admin `:8180`.
+
+## API Endpoint Patterns (.NET)
+
+The API mixes two styles — prefer minimal endpoints for new routes:
+- **Minimal endpoints** (`src/AmtocBots.Api/Endpoints/`) — extension methods registered via `MapGroup()` chains in `Program.cs`
+- **Controllers** (`src/AmtocBots.Api/Controllers/`) — older pattern, still present
+
+Background services use NCrontab for cron expression parsing (`ModelSwitchScheduler`).
