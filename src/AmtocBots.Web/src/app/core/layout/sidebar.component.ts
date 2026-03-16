@@ -35,5 +35,6 @@ export class SidebarComponent {
     { label: 'Models',     icon: 'auto_awesome', path: '/models' },
     { label: 'Kanban',     icon: 'view_kanban',  path: '/kanban' },
     { label: 'Chat',       icon: 'chat',         path: '/chat' },
+    { label: 'Ollama',     icon: 'memory',       path: '/ollama' },
   ];
 }

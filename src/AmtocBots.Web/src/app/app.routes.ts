@@ -33,6 +33,10 @@ export const appRoutes: Routes = [
         path: 'chat',
         loadChildren: () => import('./features/chat/chat.routes').then(m => m.chatRoutes),
       },
+      {
+        path: 'ollama',
+        loadChildren: () => import('./features/ollama/ollama.routes').then(m => m.ollamaRoutes),
+      },
     ],
   },
   { path: '**', redirectTo: '' },
