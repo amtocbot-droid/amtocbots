@@ -18,7 +18,8 @@ public sealed record CreateSwitchRuleRequest(
     int? ThresholdPct,
     string? CronExpression,
     [Required] string TargetModel,
-    int Priority = 0);
+    int Priority = 0,
+    bool IsActive = true);
 
 public sealed record TokenUsageSummaryDto(
     Guid InstanceId,

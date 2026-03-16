@@ -124,6 +124,7 @@ public sealed class ModelsController(
         rule.CronExpression = req.CronExpression;
         rule.TargetModel = req.TargetModel;
         rule.Priority = req.Priority;
+        rule.IsActive = req.IsActive;
         await db.SaveChangesAsync(ct);
         return NoContent();
     }
