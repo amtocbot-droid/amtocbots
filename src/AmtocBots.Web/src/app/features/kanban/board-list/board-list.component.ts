@@ -7,13 +7,14 @@ import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
+import { DatePipe } from '@angular/common';
 import { KanbanStore } from '../kanban.store';
 
 @Component({
   selector: 'app-board-list',
   standalone: true,
   imports: [RouterLink, MatCardModule, MatButtonModule, MatIconModule,
-    MatDialogModule, MatFormFieldModule, MatInputModule, FormsModule],
+    MatDialogModule, MatFormFieldModule, MatInputModule, FormsModule, DatePipe],
   template: `
     <div class="page-header">
       <h1 class="page-title">Kanban Boards</h1>

@@ -1,17 +1,19 @@
 @use '@angular/material' as mat;
 
-// ── Theme ─────────────────────────────────────────────────────────────────────
-$primary: mat.define-palette(mat.$blue-palette, 600);
-$accent:  mat.define-palette(mat.$cyan-palette, 400);
-$warn:    mat.define-palette(mat.$red-palette);
-
-$theme: mat.define-dark-theme((
-  color: (primary: $primary, accent: $accent, warn: $warn),
-  typography: mat.define-typography-config($font-family: 'Inter, sans-serif'),
-  density: -1,
+// ── Theme (Angular Material M3) ───────────────────────────────────────────────
+$theme: mat.define-theme((
+  color: (
+    theme-type: dark,
+    primary: mat.$azure-palette,
+    tertiary: mat.$cyan-palette,
+  ),
+  typography: (plain-family: 'Inter, sans-serif'),
+  density: (scale: -1),
 ));
 
-@include mat.all-component-themes($theme);
+:root {
+  @include mat.all-component-themes($theme);
+}
 
 // ── CSS Custom Properties ─────────────────────────────────────────────────────
 :root {

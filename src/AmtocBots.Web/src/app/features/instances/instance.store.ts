@@ -10,7 +10,7 @@ import { SignalrService } from '../../core/signalr/signalr.service';
 @Injectable({ providedIn: 'root' })
 export class InstanceStore {
   private readonly api     = inject(InstanceApiService);
-  private readonly signalr = inject(SignalrService);
+  readonly signalr = inject(SignalrService);
   private readonly snack   = inject(MatSnackBar);
   private readonly router  = inject(Router);
 
@@ -51,8 +51,8 @@ export class InstanceStore {
       for (const inst of list.filter(i => i.status === 'running')) {
         await this.signalr.invoke('instances', 'SubscribeToInstance', inst.id);
       }
-    } catch (e: any) {
-      this.error.set(e?.message ?? 'Failed to load instances');
+    } catch (e) {
+      this.error.set((e as Error)?.message ?? 'Failed to load instances');
     } finally {
       this.loading.set(false);
     }
@@ -74,7 +74,7 @@ export class InstanceStore {
     try {
       await firstValueFrom(this.api.restart(id));
       this.snack.open('Instance restarting…', undefined, { duration: 2500 });
-    } catch {
+    } catch (_e) {
       this._setStatus(id, 'error');
     }
   }
@@ -85,15 +85,15 @@ export class InstanceStore {
       this.instances.update(list => list.filter(i => i.id !== id));
       this.snack.open('Instance deleted', undefined, { duration: 2500 });
       this.router.navigate(['/instances']);
-    } catch (e: any) {
-      this.snack.open(e?.error?.detail ?? 'Delete failed', 'Dismiss', { duration: 4000 });
+    } catch (e) {
+      this.snack.open((e as any)?.error?.detail ?? 'Delete failed', 'Dismiss', { duration: 4000 });
     }
   }
 
   private async _action(id: string, optimisticStatus: string, fn: () => any): Promise<void> {
     this._setStatus(id, optimisticStatus);
     try { await firstValueFrom(fn()); }
-    catch { this._setStatus(id, 'error'); throw; }
+    catch (_e) { this._setStatus(id, 'error'); throw _e; }
   }
 
   private _setStatus(id: string, status: string): void {

@@ -59,7 +59,7 @@ export class ChannelConfigComponent implements OnInit {
   onSaved(type: string, updated: ChannelConfigData): void {
     this.configs.update(list => {
       const idx = list.findIndex(c => c.channelType === type);
-      return idx >= 0 ? list.with(idx, updated) : [...list, updated];
+      return idx >= 0 ? [...list.slice(0, idx), updated, ...list.slice(idx + 1)] : [...list, updated];
     });
   }
 }

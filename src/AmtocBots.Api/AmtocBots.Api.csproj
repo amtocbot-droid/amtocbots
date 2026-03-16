@@ -34,7 +34,7 @@
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.*" />
 
     <!-- JSON5 support for OpenClaw configs -->
-    <PackageReference Include="Hjson" Version="3.1.*" />
+    <PackageReference Include="Hjson" Version="3.0.*" />
   </ItemGroup>
 
 </Project>

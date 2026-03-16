@@ -16,10 +16,7 @@ export class AuthService {
     { initialValue: null }
   );
 
-  readonly accessToken = toSignal(
-    this.oidc.getAccessToken(),
-    { initialValue: '' }
-  );
+  readonly accessToken = toSignal(this.oidc.getAccessToken());
 
   readonly roles = computed<string[]>(() => {
     const ud = this.userData();
@@ -34,7 +31,8 @@ export class AuthService {
   login()  { this.oidc.authorize(); }
   logout() { this.oidc.logoff().subscribe(); }
 
-  getToken(): string { return this.oidc.getAccessToken()() ?? ''; }
+  getToken(): string { return this.accessToken() ?? ''; }
+
 }
 
 import { map } from 'rxjs';
