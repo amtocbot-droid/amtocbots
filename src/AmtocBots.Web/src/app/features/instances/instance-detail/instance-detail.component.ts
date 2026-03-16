@@ -17,6 +17,7 @@ import { InstanceDetail } from '../instance.models';
 import { InstanceConfigEditorComponent } from '../instance-config-editor/instance-config-editor.component';
 import { InstanceLogViewerComponent } from '../instance-log-viewer/instance-log-viewer.component';
 import { ChannelConfigComponent } from '../../channels/channel-config.component';
+import { DecimalPipe } from '@angular/common';
 import { environment } from '../../../../environments/environment';
 
 @Component({
@@ -25,7 +26,7 @@ import { environment } from '../../../../environments/environment';
   imports: [
     RouterLink, MatTabsModule, MatButtonModule, MatIconModule,
     MatProgressSpinnerModule, MatTooltipModule,
-    StatusBadgeComponent, InstanceConfigEditorComponent, InstanceLogViewerComponent, ChannelConfigComponent,
+    StatusBadgeComponent, InstanceConfigEditorComponent, InstanceLogViewerComponent, ChannelConfigComponent, DecimalPipe,
   ],
   template: `
     @if (loading()) {
@@ -180,5 +181,3 @@ export class InstanceDetailComponent implements OnInit {
     }).afterClosed().subscribe(ok => { if (ok) this.store.delete(this.id()); });
   }
 }
-
-import { DecimalPipe } from '@angular/common';
