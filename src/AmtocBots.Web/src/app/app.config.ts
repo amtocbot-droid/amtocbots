@@ -30,6 +30,7 @@ export const appConfig: ApplicationConfig = {
         useRefreshToken: true,
         logLevel: environment.production ? LogLevel.Warn : LogLevel.Debug,
         secureRoutes: [environment.apiBase, environment.hubBase],
+
       },
     }),
   ],

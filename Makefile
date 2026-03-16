@@ -10,7 +10,7 @@ up-build:
 
 ## Start in dev mode (includes docker-compose.dev.yml overrides)
 dev:
-	docker compose -f docker-compose.yml -f docker-compose.dev.yml up
+	docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
 
 ## Stop all services
 down:
