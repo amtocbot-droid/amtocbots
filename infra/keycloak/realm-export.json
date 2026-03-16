@@ -148,14 +148,14 @@
     "cibaInterval": "5",
     "parRequestUriLifespan": "60",
     "webAuthnPolicyRpEntityName": "AmtocBots",
-    "webAuthnPolicySignatureAlgorithms": ["ES256"],
+    "webAuthnPolicySignatureAlgorithms": "ES256",
     "webAuthnPolicyRpId": "amtocbot.com",
     "webAuthnPolicyAttestationConveyancePreference": "not specified",
     "webAuthnPolicyAuthenticatorAttachment": "not specified",
     "webAuthnPolicyRequireResidentKey": "not specified",
     "webAuthnPolicyUserVerificationRequirement": "not specified",
     "webAuthnPolicyPasswordlessRpEntityName": "AmtocBots",
-    "webAuthnPolicyPasswordlessSignatureAlgorithms": ["ES256"],
+    "webAuthnPolicyPasswordlessSignatureAlgorithms": "ES256",
     "webAuthnPolicyPasswordlessRpId": "amtocbot.com",
     "webAuthnPolicyPasswordlessUserVerificationRequirement": "required"
   }

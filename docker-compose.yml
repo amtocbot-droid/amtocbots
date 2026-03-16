@@ -35,11 +35,8 @@ services:
   cloudflared:
     image: cloudflare/cloudflared:latest
     restart: unless-stopped
-    command: tunnel --config /etc/cloudflared/config.yml run
+    command: tunnel run --token ${CLOUDFLARE_TUNNEL_TOKEN}
     networks: [internal]
-    volumes:
-      - ./infra/cloudflare/config.yml:/etc/cloudflared/config.yml:ro
-      - ./infra/cloudflare/credentials.json:/etc/cloudflared/credentials.json:ro
     depends_on:
       - caddy
 
