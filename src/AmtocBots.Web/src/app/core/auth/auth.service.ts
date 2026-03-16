@@ -26,6 +26,8 @@ export class AuthService {
     return ud?.realm_access?.roles ?? [];
   });
 
+  readonly userId     = computed<string>(() => this.userData()?.sub ?? '');
+  readonly username   = computed<string>(() => this.userData()?.preferred_username ?? '');
   readonly isAdmin    = computed(() => this.roles().includes('admin'));
   readonly isOperator = computed(() => this.roles().includes('admin') || this.roles().includes('operator'));
 
