@@ -8,17 +8,17 @@ up:
 up-build:
 	docker compose up -d --build
 
-## Start in dev mode (override file auto-included)
+## Start in dev mode (includes docker-compose.dev.yml overrides)
 dev:
-	docker compose up
+	docker compose -f docker-compose.yml -f docker-compose.dev.yml up
 
 ## Stop all services
 down:
-	docker compose down
+	docker compose -f docker-compose.yml -f docker-compose.dev.yml down
 
 ## Stop and remove volumes (destructive)
 clean:
-	docker compose down -v
+	docker compose -f docker-compose.yml -f docker-compose.dev.yml down -v
 
 ## Restart a specific service: make restart s=manager-api
 restart:
