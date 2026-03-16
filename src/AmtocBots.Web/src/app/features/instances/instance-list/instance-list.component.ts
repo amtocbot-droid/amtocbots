@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, Pipe, PipeTransform } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -6,17 +6,23 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog } from '@angular/material/dialog';
+import { DecimalPipe } from '@angular/common';
 import { StatusBadgeComponent } from '../../../shared/components/status-badge/status-badge.component';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { InstanceStore } from '../instance.store';
 import { AuthService } from '../../../core/auth/auth.service';
+
+@Pipe({ name: 'cpuClamp', standalone: true })
+export class CpuClampPipe implements PipeTransform {
+  transform(v: number): number { return Math.min(100, Math.max(0, v)); }
+}
 
 @Component({
   selector: 'app-instance-list',
   standalone: true,
   imports: [
     RouterLink, MatCardModule, MatButtonModule, MatIconModule,
-    MatProgressBarModule, MatTooltipModule, StatusBadgeComponent,
+    MatProgressBarModule, MatTooltipModule, StatusBadgeComponent, DecimalPipe, CpuClampPipe,
   ],
   template: `
     <div class="page-header">
@@ -168,12 +174,4 @@ export class InstanceListComponent implements OnInit {
       width: '380px',
     }).afterClosed().subscribe(ok => { if (ok) this.store.delete(id); });
   }
-}
-
-import { Pipe, PipeTransform } from '@angular/core';
-import { DecimalPipe } from '@angular/common';
-
-@Pipe({ name: 'cpuClamp', standalone: true })
-export class CpuClampPipe implements PipeTransform {
-  transform(v: number): number { return Math.min(100, Math.max(0, v)); }
 }

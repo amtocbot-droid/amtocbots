@@ -9,6 +9,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { firstValueFrom } from 'rxjs';
 import { RouterLink } from '@angular/router';
+import { DecimalPipe, CurrencyPipe } from '@angular/common';
 import { environment } from '../../../../environments/environment';
 import { SwitchRulesComponent } from '../switch-rules/switch-rules.component';
 
@@ -36,7 +37,8 @@ interface ModelAggregate {
   selector: 'app-token-dashboard',
   standalone: true,
   imports: [MatCardModule, MatButtonModule, MatIconModule, MatSelectModule,
-    FormsModule, MatTableModule, MatTooltipModule, RouterLink, SwitchRulesComponent],
+    FormsModule, MatTableModule, MatTooltipModule, RouterLink, SwitchRulesComponent,
+    DecimalPipe, CurrencyPipe],
   template: `
     <div class="page-header">
       <h1 class="page-title">Model & Token Intelligence</h1>

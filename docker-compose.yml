@@ -66,7 +66,7 @@ services:
       ASPNETCORE_ENVIRONMENT: Production
       ASPNETCORE_URLS: http://+:8080
       ConnectionStrings__Default: "Host=manager-db;Port=5432;Database=amtocbots;Username=amtocbots;Password=${MANAGER_DB_PASSWORD}"
-      Redis__ConnectionString: "redis:6379"
+      Redis__ConnectionString: "redis:6379,password=${REDIS_PASSWORD}"
       Keycloak__Authority: "https://auth.amtocbot.com/realms/amtocbots"
       Keycloak__Audience: "amtocbots-api"
       Docker__SocketPath: "/var/run/docker.sock"

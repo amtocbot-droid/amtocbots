@@ -1,14 +1,14 @@
 import { Injectable, inject, signal } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
 import { Observable, Subject } from 'rxjs';
-import { OidcSecurityService } from 'angular-auth-oidc-client';
 import { environment } from '../../../environments/environment';
+import { AuthService } from '../auth/auth.service';
 
 export type HubName = 'instances' | 'kanban' | 'chat';
 
 @Injectable({ providedIn: 'root' })
 export class SignalrService {
-  private readonly oidc = inject(OidcSecurityService);
+  private readonly auth = inject(AuthService);
   private readonly connections = new Map<HubName, signalR.HubConnection>();
   private readonly subjects    = new Map<string, Subject<unknown>>();
 
@@ -20,7 +20,7 @@ export class SignalrService {
 
     const connection = new signalR.HubConnectionBuilder()
       .withUrl(`${environment.hubBase}/${hub}`, {
-        accessTokenFactory: () => this.oidc.getAccessToken()() ?? '',
+        accessTokenFactory: () => this.auth.getToken(),
       })
       .withAutomaticReconnect([0, 2000, 10000, 30000])
       .configureLogging(signalR.LogLevel.Warning)

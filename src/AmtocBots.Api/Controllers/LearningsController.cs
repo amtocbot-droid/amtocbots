@@ -22,7 +22,7 @@ public sealed class LearningsController(AppDbContext db, IOllamaService ollama) 
         float[]? embedding;
         try
         {
-            embedding = await ollama.GenerateEmbeddingAsync(q, ct);
+            embedding = await ollama.GenerateEmbeddingAsync(q, ct: ct);
         }
         catch
         {
@@ -74,7 +74,7 @@ public sealed class LearningsController(AppDbContext db, IOllamaService ollama) 
 
         try
         {
-            var embedding = await ollama.GenerateEmbeddingAsync(req.Content, ct);
+            var embedding = await ollama.GenerateEmbeddingAsync(req.Content, ct: ct);
             learning.Embedding = new Vector(embedding);
         }
         catch

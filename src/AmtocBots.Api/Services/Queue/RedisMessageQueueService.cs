@@ -19,7 +19,7 @@ public sealed class RedisMessageQueueService(IConnectionMultiplexer redis) : IMe
         var db = redis.GetDatabase();
         var value = await db.ListRightPopAsync(QueueKey);
         if (value.IsNullOrEmpty) return null;
-        return JsonSerializer.Deserialize<QueuedAgentMessage>(value!);
+        return JsonSerializer.Deserialize<QueuedAgentMessage>((string)value!);
     }
 
     public async Task RequeueWithDelayAsync(QueuedAgentMessage message, TimeSpan delay, CancellationToken ct = default)

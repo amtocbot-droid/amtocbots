@@ -6,7 +6,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { ScrollingModule } from '@angular/cdk/scrolling';
-import { DatePipe } from '@angular/common';
+import { DatePipe, SlicePipe } from '@angular/common';
 import { ChatStore, MessageDto } from '../chat.store';
 import { AuthService } from '../../../core/auth/auth.service';
 
@@ -15,7 +15,7 @@ import { AuthService } from '../../../core/auth/auth.service';
   standalone: true,
   imports: [
     FormsModule, MatButtonModule, MatIconModule, MatTooltipModule,
-    MatFormFieldModule, MatInputModule, ScrollingModule, DatePipe,
+    MatFormFieldModule, MatInputModule, ScrollingModule, DatePipe, SlicePipe,
   ],
   template: `
     <div class="chat-layout">

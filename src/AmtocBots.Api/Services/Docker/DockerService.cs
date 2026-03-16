@@ -39,7 +39,7 @@ public sealed class DockerService : IDockerService, IDisposable
             hostConfig.Memory = instance.MemoryLimitMb.Value * 1024L * 1024L;
 
         if (instance.CpuLimit.HasValue)
-            hostConfig.NanoCPUs = (long)(instance.CpuLimit.Value * 1e9);
+            hostConfig.NanoCPUs = (long)((double)instance.CpuLimit.Value * 1e9);
 
         var create = await _client.Containers.CreateContainerAsync(new CreateContainerParameters
         {
@@ -93,8 +93,8 @@ public sealed class DockerService : IDockerService, IDisposable
                 new Progress<ContainerStatsResponse>(s =>
                 {
                     cpuPct = CalculateCpuPercent(s);
-                    memUsage = (long)(s.MemoryStats.Usage ?? 0) / (1024 * 1024);
-                    memLimit = (long)(s.MemoryStats.Limit ?? 0) / (1024 * 1024);
+                    memUsage = (long)s.MemoryStats.Usage / (1024 * 1024);
+                    memLimit = (long)s.MemoryStats.Limit / (1024 * 1024);
                     cts.Cancel();
                 }), cts.Token);
 
