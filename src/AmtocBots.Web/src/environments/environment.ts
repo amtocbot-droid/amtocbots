@@ -7,6 +7,6 @@ export const environment = {
     clientId: 'amtocbots-web',
     redirectUri: 'http://localhost:4200/callback',
     postLogoutRedirectUri: 'http://localhost:4200',
-    scope: 'openid profile email roles',
+    scope: 'openid profile email roles offline_access',
   },
 };

@@ -142,7 +142,7 @@ Caddy does **not** handle TLS — Cloudflare Tunnel terminates HTTPS externally.
 
 ## Environment
 
-Copy `.env.example` → `.env` and fill in all values. The override file `docker-compose.override.yml` is auto-included by `docker compose` for dev (exposes ports, uses `start-dev` for Keycloak).
+Copy `.env.example` → `.env` and fill in all values. `docker-compose.dev.yml` is only included by `make dev` (exposes ports, uses `start-dev` for Keycloak with `KC_HOSTNAME=localhost`). It is **not** auto-included — `make up` runs production config only.
 
 Dev port exposure via `docker-compose.override.yml`: API `:8080`, Angular `:4200`, PostgreSQL `:5432`, Keycloak admin `:8180`.
 
