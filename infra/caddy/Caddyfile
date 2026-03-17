@@ -19,6 +19,8 @@ http://auth.amtocbot.com {
         header_up X-Forwarded-Proto https
         header_up X-Forwarded-Host {host}
         header_up X-Real-IP {remote_host}
+        # Override Keycloak's long-lived cache header so Cloudflare never caches
+        header_down Cache-Control "no-store, no-cache"
     }
 }
 

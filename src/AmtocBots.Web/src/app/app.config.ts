@@ -1,9 +1,10 @@
-import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
+import { APP_INITIALIZER, ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter, withComponentInputBinding, withViewTransitions } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideServiceWorker } from '@angular/service-worker';
-import { provideAuth, LogLevel } from 'angular-auth-oidc-client';
+import { provideAuth, LogLevel, OidcSecurityService } from 'angular-auth-oidc-client';
+import { catchError, of } from 'rxjs';
 import { appRoutes } from './app.routes';
 import { authTokenInterceptor } from './core/auth/auth-token.interceptor';
 import { environment } from '../environments/environment';
@@ -30,8 +31,23 @@ export const appConfig: ApplicationConfig = {
         useRefreshToken: true,
         logLevel: environment.production ? LogLevel.Warn : LogLevel.Debug,
         secureRoutes: [environment.apiBase, environment.hubBase],
-
       },
     }),
+    {
+      provide: APP_INITIALIZER,
+      useFactory: (oidc: OidcSecurityService) => () =>
+        oidc.checkAuth().pipe(
+          catchError((error) => {
+            // Keep app booting even when OIDC discovery/auth server is temporarily unavailable.
+            // This avoids opaque runtime crashes like "Error: [object Object]".
+            if (!environment.production) {
+              console.error('OIDC initialization failed (is Keycloak reachable?):', error);
+            }
+            return of(null);
+          })
+        ),
+      deps: [OidcSecurityService],
+      multi: true,
+    },
   ],
 };
